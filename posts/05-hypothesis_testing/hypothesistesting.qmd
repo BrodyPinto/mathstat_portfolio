@@ -1,0 +1,84 @@
+---
+title: "Mini Project 5: Advantages and Drawbacks of Using p-values"
+author: "Brody Pinto"
+date: "2025-04-18"
+format: 
+  html:
+    embed-resources: true
+execute: 
+  warning: false
+---
+
+**1. Towards the end of Section 1, the authors say “As ‘statistical significance’ is used less, statistical thinking will be used more.” Elaborate on what you think the authors mean. Give some examples of what you think embodies “statistical thinking.”**
+
+- I think what the authors mean is that we’ll stop just chasing p < 0.05 and instead actually think about what the data is saying in the bigger picture.
+
+- Statistical thinking is more about asking: does this result make sense? Is it useful? Are there other factors at play? A thoughtful statistician should take these questions into account when reporting their findings.
+
+- It’s moving away from a “did I pass or fail?” mindset and towards understanding and interpreting results like a scientist would. This is kind of like moving away from determining tennis success by match results towards reflecting on how I competed / performed.
+
+<br>
+
+**2. Section 2, third paragraph: The authors state “A label of statistical significance adds nothing to what is already conveyed by the value of p; in fact, this dichotomization of p-values makes matters worse.” Elaborate on what you think the authors means.**
+
+- Basically, calling something “statistically significant” is just restating the p-value in a more dramatic way — and usually oversimplifying it.
+
+- This antiquated label makes it seem like there’s a huge difference between a result just above and just below 0.05, which there typically isn’t.
+
+- It creates a black-and-white interpretation of something that really lives on a gradient/spectrum. For example, p = 0.049 vs p = 0.051 shows up as two different things, when they really aren’t that different at all.
+
+- This can be difficult for people who aren't experienced in stats but are trying to use stats to back up their findings. In my experience, I've found this to be pretty common in the hard sciences since I've taken many biology and chemistry classes.
+
+<br>
+
+**3. Section 2, end of first column: The authors state “For the integrity of scientific publishing and research dissemination, therefore, whether a p-value passes any arbitrary threshold should not be considered at all when deciding which results to present or highlight.” Do you agree or disagree? How should it be decided which results to present/highlight in scientific publishing?**
+
+- I 100% agree — the idea that we should only talk about results that hit some arbitrary cutoff doesn’t feel scientific to me. 
+
+  - This reminds me of when I helped a Senior on the tennis team a couple years ago with conducting a t-test for their research project. All he cared about was hunting down "statistically significant" p-value to slap into his paper and didn't want to include the result if the p-value wasn't *good enough*. 🦞
+
+- I tried to explain to him that sometimes a result with p = 0.09 could still be super interesting or support a bigger story in his data — a result like this shouldn’t be ignored just because they missed the mark.
+
+- What we choose to present should depend on how meaningful, relevant, or surprising the result is — not whether it passes some statistical checkpoint.
+
+<br>
+
+**4. Section 3, end of page 2: The authors state “The statistical community has not yet converged on a simple paradigm for the use of statistical inference in scientific research – and in fact it may never do so. A one-size-fits-all approach to statistical inference is an inappropriate expectation.” Do you agree or disagree? Explain.**
+
+- Totally agree with this one too. Not every dataset or research question should be treated the same since data comes in so many different forms and should require different scales of assessing significance.
+
+- Some studies might need formal tests (like in medical sciences that require high amounts of precision), others are more exploratory (like an ecological survey), and some are about estimation or prediction (like trying to predict a stock price, which requires a high degree of flexibility).
+
+- Trying to force everyone into the same box (like p-values or NHST) kind of defeats the purpose of using stats *thoughtfully* in the first place.
+
+<br>
+
+**5. Section 3.2: The authors note that they are envisioning “a sort of ‘statistical thoughtfulness’.” What do you think “statistical thoughtfulness” means? What are some ways to demonstrate “statistical thoughtfulness” in an analysis?**
+
+- To me, "statistical thoughtfulness" is caring about what your analysis means and drawing meaningful conclusions instead of just caring about the numbers.
+
+- It's not about doing a fancy test — it's about thinking critically about assumptions, interpreting your results carefully, and communicating them *honestly*. I feel like there is no room for dishonestly in the scientific world since science is the backbone that is holding our fragile existence on Earth together. 
+
+- A thoughtful analysis shows that the person behind it really understood the data and took the time to be clear, even if it’s a messy, complicated, or hard-to-present result.
+
+<br>
+
+**6. Section 3.2.4: A few of the authors of papers in this special issue argue that some of the terminology used in statistics, such as “significance” and “confidence” can be misleading, and they propose the use of “compatibility” instead. What you do you think they believe the problem is? Do you agree or disagree (that there is a problem and that changing the name will help)?**
+
+- I think the problem is that words like “significance” and “confidence” sound way more *certain* and *conclusive* than they actually are. You still have to think about why you're getting a significant result and what are the inner-workings behind the result.
+
+- “Compatibility” feels like a softer, more accurate word — it tells you that a result fits with the data, but doesn’t claim anything absolute. It's by no means a perfect word, but it might be less misleading.
+
+- I do think switching to better language along these lines could go a long way in helping people (even researchers) avoid misinterpreting what their results actually mean.
+
+<br>
+
+**7. Find a quote or point that really strikes you (i.e., made you think). What is the quote (and tell me where to find it), and why does it stand out to you?**
+
+- Interesting quote: “As Gelman and Stern (2006) famously observed, the difference between ‘significant’ and ‘not significant’ is not itself statistically significant.” (Section 2, last sentence of paragraph 4). 
+
+- This quote gave me shivers when I read it because I've always thought (through my long 4 years of being a statistician) how silly it is to draw a hard line at p = 0.05, one side being *good* and the other side being *bad*.
+
+- The difference between a p = 0.049 and p = 0.051 is next to none, and using the p = 0.05 cutoff incorrectly dichotomizes the two results. That's why cutoffs in statistics should be a thing of the past, and it should become more of a gradient.
+
+<br>

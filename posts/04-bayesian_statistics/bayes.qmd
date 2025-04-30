@@ -1,0 +1,131 @@
+---
+title: "Mini Project 4: Bayesian Analysis"
+author: "Brody Pinto"
+date: "2025-04-02"
+format: 
+  html:
+    embed-resources: true
+execute: 
+  warning: false
+---
+
+```{r}
+library(tidyverse)
+```
+
+
+## Introduction
+
+In this Mini-Project, I we are doing a Bayesian analysis on the probability that Rafael Nadal wins a point on his own serve against his primary rival, Novak Djokovic, at the French Open. We're going to attempt to create a Bayesian model with an informative prior distribution updated with actual data from the 2020 French Open meeting between these two players. The resulting posterior distribution should give us some insight into the probability that Nadal wins a point on his serve against Djokovic at the French Open.
+
+## Creating the Priors
+
+Prior 1: uniform uninformative prior assumes no prior knowledge and estimates a 50% probability of winning his serve.
+```{r}
+# Prior 1: uniformative prior Beta(1,1)
+alpha1 = 1
+beta1 = 1
+```
+
+Prior 2: informative prior constructed with data from the previous year where Nadal won 46 points on his serve and lost 20 points on his serve. I will assign alpha and beta to these respective win counts. To make sure these values work with the conditions of the problem, I calculated the variance and it is very close to what's given (SE = 0.05657). We must assume both players' games haven't changed in the year since they played last, assume same conditions of play, assume no different momentum from their previous matches, and assume both players are healthy.
+```{r}
+# Prior 2: Beta(46,20)
+alpha2 = 46 # successes
+beta2 = 20 # failures
+possible_params2 = tibble(alpha2, beta2, alpha2/(alpha2 + beta2))
+
+possible_params2 |>
+  mutate(variance = alpha2 * beta2 / ((alpha2 + beta2)^2 * (alpha2 + beta2 + 1))) |>
+  mutate(dist_to_target = abs(variance - 0.05657^2)) # variance is very close
+```
+
+Prior 3: informative prior based on sports announcer's estimate of 75% probability and not less than 70%. We will set the constraint on alphas and betas based on the announcer's estimate and then see which combination of alpha and beta gets us the smallest percentage that goes smaller than 70% probability. First of all, we must assume the sports announcer is a credible and accurate source, assume both players are fully healthy, assume no momentum from their previous matches, and assume normal playing conditions.
+```{r}
+# Prior 3: Beta(100,33.3)
+alphas <- seq(0.01, 100, length.out = 2000) 
+betas <- alphas / 3 # derived from 0.75 estimate
+
+target_prob <- 0.02
+prob_less_70 <- pbeta(0.70, alphas, betas)
+
+tibble(alphas, betas, alphas/betas, prob_less_70) |>
+  mutate(close_to_target = abs(prob_less_70 - target_prob)) |>
+  filter(close_to_target == min(close_to_target)) 
+```
+
+## Plot of the Priors
+```{r}
+ps <- seq(0, 1, length.out = 1000)
+one_prior <- dbeta(ps, 1, 1)
+two_prior <- dbeta(ps, 46, 20)
+three_prior <- dbeta(ps, 100, 33.3)
+
+plot1 <- tibble(ps, one_prior, two_prior, three_prior) |>
+  pivot_longer(2:4, names_to = "dist_type", values_to = "density")
+
+ggplot(data = plot1, aes(x = ps, y = density, colour = dist_type)) +
+  geom_line() +
+  scale_colour_viridis_d(end = 0.9) +
+  theme_minimal() +
+  labs(x = "p")
+```
+
+## Data
+
+We want to use the 2020 French Open data to update our prior for the probability that Nadal wins a point on serve. In that tournament, the two players played in the final. In that final, Nadal served 84 points and won 56 of those points.
+
+## Posteriors
+
+$g(\theta | y_{obs}) \sim Beta(\alpha_{post} = \alpha_{pre}+56, \beta_{post} = \beta_{pre} + 28)$
+
+```{r}
+# Posterior 1
+apost1 = 1+56
+bpost1 = 1+28
+one_post = dbeta(ps, apost1, bpost1)
+mean1 = apost1 / (apost1 + bpost1)
+mean1 # posterior mean with the uninformative prior Beta(1,1)
+qbeta(c(0.05, 0.95), apost1, bpost1) # 90% credible interval
+
+# Posterior 2
+apost2 = 46+56
+bpost2 = 20+28
+two_post = dbeta(ps, apost2, bpost2)
+mean2 = apost2 / (apost2 + bpost2)
+mean2 # posterior mean with the informative prior Beta(46,20)
+qbeta(c(0.05, 0.95), apost2, bpost2) # 90% credible interval
+
+# Posterior 3
+apost3 = 100+56
+bpost3 = 33.3+28
+three_post = dbeta(ps, apost3, bpost3)
+mean3 = apost3 / (apost3 + bpost3)
+mean3 # posterior mean with the informative prior Beta(100,33.3)
+qbeta(c(0.05, 0.95), apost3, bpost3) # 90% credible interval
+```
+
+## Plot of the Posteriors
+```{r}
+plot2 <- tibble(ps, one_post, two_post, three_post) |>
+  pivot_longer(2:4, names_to = "dist_type", values_to = "density")
+
+ggplot(data = plot2, aes(x = ps, y = density, colour = dist_type)) +
+  geom_line() +
+  scale_colour_viridis_d(end = 0.9) +
+  theme_minimal() +
+  labs(x = "p")
+```
+
+## Conclusions
+
+Each of the posterior distributions are slightly different because they each come from different prior distributions. The first posterior distribution comes from the uninformative prior, so the data from 2020 is having a significant influence on the posterior distribution, dragging it towards the proportion of $56/84 = 0.667$. The second posterior distribution comes from the informative prior from last year's data, so I think it might provide the most accurate posterior distribution. Nadal had a higher win percentage on his serve in 2019 than in 2020, so the data update drags the center of the distribution slightly to the left. The third posterior distribution has the highest estimated win probability at 0.72, this is because the announcer's estimate was high at 0.75.
+
+The variance of the third posterior distribution has the lowest of the three (it has the narrowest 90% credible interval). This may be because it has the largest values of $\alpha$ and $\beta$, and with the quadratic in the denominator of the variance of a Beta distribution, the resulting variance is small compared to the other posteriors with smaller values for $\alpha$ and $\beta$.
+
+If I had to choose one distribution to pick above the other two, I would pick the second one because the prior is derived from more accurate information (in my opinion) than the third posterior distribution even though the second posterior has a slightly wider credible interval. Therefore, I can say, based on the 90% credible interval from the second posterior, that there is a 0.9 probability that Nadal's win percentage while he's serving against Djokovic at the French Open is between 61.6% and 74.1%.
+
+In summary, all three posterior distributions are pretty similar to one another, with minor differences setting the posteriors with informative priors apart. However, even with a uniform prior and only one year of data, the first posterior provides a result that is pretty consistent with the posteriors with informative priors. Additionally, this project effectively shows that for the Beta distribution, larger values of $\alpha$ and $\beta$ mean that the model is more credible (has a smaller credible interval and smaller variance). Thus, if there is a situation where you aren't overly confident in your prior, it's best to pick smaller values for $\alpha$ and $\beta$.
+
+
+
+

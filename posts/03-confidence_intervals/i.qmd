@@ -1,0 +1,223 @@
+---
+title: "Mini Project 3: Simulation to Investigate Confidence Intervals"
+author: "Brody Pinto and Lily Kendall"
+date: "2025-03-05"
+format: 
+  html:
+    embed-resources: true
+execute: 
+  echo: true
+  output: true
+  warning: false
+---
+
+## Step 1
+
+small: n = 4
+
+medium: n = 20
+
+large: n = 100
+
+p (close): p = 0.46
+
+p (far): p = 0.87
+
+
+## Function for generating sample proportion
+
+```{r}
+library(resample)
+library(tidyverse)
+```
+
+```{r}
+generate_samp_prop <- function(n, p) {
+  x <- rbinom(1, n, p) # randomly generate number of successes for the sample
+
+  ## number of successes divided by sample size
+  phat <- x / n
+  
+  # 90% confidence interval
+  lb <- phat - qnorm(0.95) * (sqrt(phat * (1 - phat) / n))
+  ub <- phat + qnorm(0.95) * (sqrt(phat * (1 - phat) / n))
+  
+  prop_df <- tibble(phat, lb, ub)
+  
+  return (prop_df)
+}
+```
+
+
+## n = 100, p = 0.87
+
+$np = 100 * 0.87 = 87$
+
+$n(1-p) = 100 * (1-0.87) = 13$
+
+The large sample assumption holds because both checks are greater than 10!
+
+```{r}
+## n = 100, p = 0.87
+n_sim <- 5000
+p <- 0.87
+
+prop_ci_df <- map(1:n_sim, \(i) generate_samp_prop(n=100, p=0.87)) |> bind_rows()
+
+many_ci_df <- prop_ci_df |> mutate(ci_width = ub - lb,
+                                   ci_cover_ind = if_else(p > lb & p < ub,
+                                                          true = 1, 
+                                                          false = 0))
+many_ci_df |> summarise(avg_width = mean(ci_width),
+                        coverage_rate = mean(ci_cover_ind))
+```
+
+
+## n = 100, p = 0.46
+
+$np = 100 * 0.46 = 46$
+
+$n(1-p) = 100 * (1-0.46) = 54$
+
+The large sample assumption holds because both checks are greater than 10!
+
+```{r}
+## n = 100, p = 0.46
+n_sim <- 5000
+p <- 0.46
+
+prop_ci_df <- map(1:n_sim, \(i) generate_samp_prop(n=100, p=0.46)) |> bind_rows()
+
+many_ci_df <- prop_ci_df |> mutate(ci_width = ub - lb,
+                                   ci_cover_ind = if_else(p > lb & p < ub,
+                                                          true = 1, 
+                                                          false = 0))
+many_ci_df |> summarise(avg_width = mean(ci_width),
+                        coverage_rate = mean(ci_cover_ind))
+```
+
+
+## n = 20, p = 0.87
+
+$np = 20 * 0.87 = 17.4$
+
+$n(1-p) = 20 * (1-0.87) = 2.6$
+
+The large sample size assumption check does not hold because n(1-p) is not greater than 10.
+
+```{r}
+## n = 20, p = 0.87
+n_sim <- 5000
+p <- 0.87
+
+prop_ci_df <- map(1:n_sim, \(i) generate_samp_prop(n=20, p=0.87)) |> bind_rows()
+
+many_ci_df <- prop_ci_df |> mutate(ci_width = ub - lb,
+                                   ci_cover_ind = if_else(p > lb & p < ub,
+                                                          true = 1, 
+                                                          false = 0))
+many_ci_df |> summarise(avg_width = mean(ci_width),
+                        coverage_rate = mean(ci_cover_ind))
+```
+
+
+## n = 20, p = 0.46
+
+$np = 20 * 0.46 = 9.2$
+
+$n(1-p) = 20 * (1-0.46) = 10.8$
+
+The large sample size assumption check does not hold because np is not greater than 10.
+
+```{r}
+## n = 20, p = 0.46
+n_sim <- 5000
+p <- 0.46
+
+prop_ci_df <- map(1:n_sim, \(i) generate_samp_prop(n=20, p=0.46)) |> bind_rows()
+
+many_ci_df <- prop_ci_df |> mutate(ci_width = ub - lb,
+                                   ci_cover_ind = if_else(p > lb & p < ub,
+                                                          true = 1, 
+                                                          false = 0))
+many_ci_df |> summarise(avg_width = mean(ci_width),
+                        coverage_rate = mean(ci_cover_ind))
+```
+
+
+## n = 4, p = 0.87
+
+$np = 4 * 0.87 = 3.48$
+
+$n(1-p) = 4 * (1-0.87) = 0.52$
+
+The large sample size assumption check does not hold because both checks are less than 10.
+
+```{r}
+## n = 4, p = 0.87
+n_sim <- 5000
+p <- 0.87
+
+prop_ci_df <- map(1:n_sim, \(i) generate_samp_prop(n=4, p=0.87)) |> bind_rows()
+
+many_ci_df <- prop_ci_df |> mutate(ci_width = ub - lb,
+                                   ci_cover_ind = if_else(p > lb & p < ub,
+                                                          true = 1, 
+                                                          false = 0))
+many_ci_df |> summarise(avg_width = mean(ci_width),
+                        coverage_rate = mean(ci_cover_ind))
+```
+
+
+## n = 4, p = 0.46
+
+$np = 4 * 0.46 = 1.84$
+
+$n(1-p) = 4 * (1-0.46) = 2.16$
+
+The large sample size assumption check does not hold because both checks are less than 10.
+
+```{r}
+## n = 4, p = 0.46
+n_sim <- 5000
+p <- 0.46
+
+prop_ci_df <- map(1:n_sim, \(i) generate_samp_prop(n=4, p=0.46)) |> bind_rows()
+
+many_ci_df <- prop_ci_df |> mutate(ci_width = ub - lb,
+                                   ci_cover_ind = if_else(p > lb & p < ub,
+                                                          true = 1, 
+                                                          false = 0))
+many_ci_df |> summarise(avg_width = mean(ci_width),
+                        coverage_rate = mean(ci_cover_ind))
+```
+
+
+
+## Results
+
+
+|                          |         | $n = 4$     | $n = 20$ | $n = 100$|
+|:----:|:-----------------:|:-------------:|:------------:|:------------:|
+| $p = 0.46$   | Coverage Rate       |  0.872      | 0.890    |   0.885  |
+| $p = 0.87$   | Coverage Rate       |  0.415      | 0.897    |   0.878  |
+|              |                     |             |          |          |
+| $p = 0.46$   | Average Width       |  0.662      | 0.357    |   0.163  |
+| $p = 0.87$   | Average Width       |  0.308      | 0.227    |   0.109  |
+
+
+: Table of Results {.striped .hover}
+
+
+## Summary of Results
+
+For the case where n = 4 and p = 0.87, the coverage rate is quite low at 0.415, meaning the true value of p falls within the confidence interval in less than half of the simulations. In contrast, for n = 20 and p = 0.87, the coverage rate is significantly higher at 0.897, indicating that the confidence interval captures the true value in almost 90% of simulations, which is what we want with a 90% confidence level. Among all cases, this scenario has the highest coverage rate. The n = 100 cases are also quite good with a coverage rates close to 0.9. Additionally, the variation in coverage rate is much greater for small sample sizes (range of 0.457) compared to the larger sample sizes, which both only vary by 0.07.
+
+As sample size increases, the average interval width decreases. For instance, when n = 4, p = 0.46, the interval width is quite large at 0.662, but when n = 100, p = 0.87, it shrinks to 0.109. The difference in average interval width for different values of p is much larger for the small sample size of n = 4 (difference of 0.354) than for the larger sample size of n = 100 (difference of 0.054). Across all sample sizes, p = 0.87 consistently results in a smaller average interval width.
+
+Additionally, both n = 4 and n = 20 violate the necessary sample size assumptions, whereas n = 100 is large enough to meet these conditions. The results for n = 100 align with what we expect from a simulated confidence interval, whereas the smaller sample sizes show more skewed outcomes. Interestingly, for n = 4, p = 0.46, the coverage rate is relatively high at 0.872, which can be attributed to the large average interval width.
+
+
+
+
+

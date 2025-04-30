@@ -1,0 +1,393 @@
+---
+title: "Mini Project 1: Sampling Distribution of the Sample Minimum and Maximum"
+author: "Brody Pinto"
+date: "2025-01-29"
+embed-resources: true
+format: html
+execute:
+  warning: false
+---
+
+```{r}
+library(tidyverse)
+## create population graphs
+
+norm_df <- tibble(x = seq(3, 17, length.out = 1000),
+                  dens = dnorm(x, mean = 10, sd = 2),
+                  pop = "normal(10, 4)")
+unif_df <- tibble(x = seq(7, 13, length.out = 1000),
+                  dens = dunif(x, 7, 13),
+                  pop = "uniform(7, 13)")
+exp_df <- tibble(x = seq(0, 10, length.out = 1000),
+                 dens = dexp(x, 0.5),
+                 pop = "exp(0.5)")
+beta_df <- tibble(x = seq(0, 1, length.out = 1000),
+                  dens = dbeta(x, 8, 2),
+                  pop = "beta(8, 2)")
+
+pop_plot <- bind_rows(norm_df, unif_df, exp_df, beta_df) |>
+  mutate(pop = fct_relevel(pop, c("normal(10, 4)", "uniform(7, 13)",
+                                  "exp(0.5)", "beta(8, 2)")))
+```
+
+```{r}
+## SIMULATION CODE
+
+nsim <- 5000 # number of simulations
+n = 5 # sample size
+
+## Normal Sampling Distribution of the Sample Minimum
+mu <- 10
+sigma <- 2
+
+generate_samp_min_norm <- function(mu, sigma, n) {
+  
+  single_sample <- rnorm(n, mu, sigma)
+  sample_min <- min(single_sample)
+  
+  return(sample_min)
+}
+
+norm_mins <- map_dbl(1:nsim, \(i) generate_samp_min_norm(mu = mu, sigma = sigma, n = n))
+
+norm_mins_df <- tibble(norm_mins)
+
+ggplot(data = norm_mins_df, aes(x = norm_mins)) +
+  geom_histogram(colour = "deeppink4", fill = "deeppink1", bins = 20) +
+  theme_minimal() +
+  labs(x = "Observed Sample mins",
+       title = paste("Sampling Distribution of the \nSample min when n =", n))
+
+norm_mins_df |>
+  summarise(mean_samp_dist = mean(norm_mins),
+            var_samp_dist = var(norm_mins),
+            sd_samp_dist = sd(norm_mins))
+
+## Normal Sampling Distribution of the Sample Maximum
+
+generate_samp_max_norm <- function(mu, sigma, n) {
+  
+  single_sample <- rnorm(n, mu, sigma)
+  sample_max <- max(single_sample)
+  
+  return(sample_max)
+}
+
+norm_maxs <- map_dbl(1:nsim, \(i) generate_samp_max_norm(mu = mu, sigma = sigma, n = n))
+
+norm_maxs_df <- tibble(norm_maxs)
+
+ggplot(data = norm_maxs_df, aes(x = norm_maxs)) +
+  geom_histogram(colour = "deeppink4", fill = "deeppink1", bins = 20) +
+  theme_minimal() +
+  labs(x = "Observed Sample mins",
+       title = paste("Sampling Distribution of the \nSample min when n =", n))
+
+norm_maxs_df |>
+  summarise(mean_samp_dist = mean(norm_maxs),
+            var_samp_dist = var(norm_maxs),
+            sd_samp_dist = sd(norm_maxs))
+
+## Uniform Sampling Distribution of the Sample Minimum
+theta1 = 7
+theta2 = 13
+
+generate_samp_min_unif <- function(theta1, theta2, n) {
+  
+  single_sample <- runif(n, theta1, theta2)
+  sample_min <- min(single_sample)
+  
+  return(sample_min)
+}
+
+unif_mins <- map_dbl(1:nsim, \(i) generate_samp_min_unif(theta1 = theta1, theta2 = theta2, n = n))
+
+unif_mins_df <- tibble(unif_mins)
+
+ggplot(data = unif_mins_df, aes(x = unif_mins)) +
+  geom_histogram(colour = "deeppink4", fill = "deeppink1", bins = 20) +
+  theme_minimal() +
+  labs(x = "Observed Sample mins",
+       title = paste("Sampling Distribution of the \nSample min when n =", n))
+
+unif_mins_df |>
+  summarise(mean_samp_dist = mean(unif_mins),
+            var_samp_dist = var(unif_mins),
+            sd_samp_dist = sd(unif_mins))
+
+## Uniform Sampling Distribution of the Sample Maximum
+
+generate_samp_max_unif <- function(theta1, theta2, n) {
+  
+  single_sample <- runif(n, theta1, theta2)
+  sample_max <- max(single_sample)
+  
+  return(sample_max)
+}
+
+unif_maxs <- map_dbl(1:nsim, \(i) generate_samp_max_unif(theta1 = theta1, theta2 = theta2, n = n))
+
+unif_maxs_df <- tibble(unif_maxs)
+
+ggplot(data = unif_maxs_df, aes(x = unif_maxs)) +
+  geom_histogram(colour = "deeppink4", fill = "deeppink1", bins = 20) +
+  theme_minimal() +
+  labs(x = "Observed Sample mins",
+       title = paste("Sampling Distribution of the \nSample min when n =", n))
+
+unif_maxs_df |>
+  summarise(mean_samp_dist = mean(unif_maxs),
+            var_samp_dist = var(unif_maxs),
+            sd_samp_dist = sd(unif_maxs))
+
+## Exponential Sampling Distribution of the Sample Minimum
+lambda = 0.5
+
+generate_samp_min_exp <- function(lambda, n) {
+  
+  single_sample <- rexp(n, lambda)
+  sample_min <- min(single_sample)
+  
+  return(sample_min)
+}
+
+exp_mins <- map_dbl(1:nsim, \(i) generate_samp_min_exp(lambda = lambda, n = n))
+
+exp_mins_df <- tibble(exp_mins)
+
+ggplot(data = exp_mins_df, aes(x = exp_mins)) +
+  geom_histogram(colour = "deeppink4", fill = "deeppink1", bins = 20) +
+  theme_minimal() +
+  labs(x = "Observed Sample mins",
+       title = paste("Sampling Distribution of the \nSample min when n =", n))
+
+exp_mins_df |>
+  summarise(mean_samp_dist = mean(exp_mins),
+            var_samp_dist = var(exp_mins),
+            sd_samp_dist = sd(exp_mins))
+
+## Exponential Sampling Distribution of the Sample Maximum
+
+generate_samp_max_exp <- function(lambda, n) {
+  
+  single_sample <- rexp(n, lambda)
+  sample_max <- max(single_sample)
+  
+  return(sample_max)
+}
+
+exp_maxs <- map_dbl(1:nsim, \(i) generate_samp_max_exp(lambda = lambda, n = n))
+
+exp_maxs_df <- tibble(exp_maxs)
+
+ggplot(data = exp_maxs_df, aes(x = exp_maxs)) +
+  geom_histogram(colour = "deeppink4", fill = "deeppink1", bins = 20) +
+  theme_minimal() +
+  labs(x = "Observed Sample mins",
+       title = paste("Sampling Distribution of the \nSample min when n =", n))
+
+exp_maxs_df |>
+  summarise(mean_samp_dist = mean(exp_maxs),
+            var_samp_dist = var(exp_maxs),
+            sd_samp_dist = sd(exp_maxs))
+
+## Beta Sampling Distribution of the Sample Minimum
+alpha = 8
+beta = 2
+
+generate_samp_min_beta <- function(alpha, beta, n) {
+  
+  single_sample <- rbeta(n, alpha, beta)
+  sample_min <- min(single_sample)
+  
+  return(sample_min)
+}
+
+beta_mins <- map_dbl(1:nsim, \(i) generate_samp_min_beta(alpha = alpha, beta = beta, n = n))
+
+beta_mins_df <- tibble(beta_mins)
+
+ggplot(data = beta_mins_df, aes(x = beta_mins)) +
+  geom_histogram(colour = "deeppink4", fill = "deeppink1", bins = 20) +
+  theme_minimal() +
+  labs(x = "Observed Sample mins",
+       title = paste("Sampling Distribution of the \nSample min when n =", n))
+
+beta_mins_df |>
+  summarise(mean_samp_dist = mean(beta_mins),
+            var_samp_dist = var(beta_mins),
+            sd_samp_dist = sd(beta_mins))
+
+## Beta Sampling Distribution of the Sample Maximum
+
+generate_samp_max_beta <- function(alpha, beta, n) {
+  
+  single_sample <- rbeta(n, alpha, beta)
+  sample_max <- max(single_sample)
+  
+  return(sample_max)
+}
+
+beta_maxs <- map_dbl(1:nsim, \(i) generate_samp_max_beta(alpha = alpha, beta = beta, n = n))
+
+beta_maxs_df <- tibble(beta_maxs)
+
+ggplot(data = beta_maxs_df, aes(x = beta_maxs)) +
+  geom_histogram(colour = "deeppink4", fill = "deeppink1", bins = 20) +
+  theme_minimal() +
+  labs(x = "Observed Sample mins",
+       title = paste("Sampling Distribution of the \nSample min when n =", n))
+
+beta_maxs_df |>
+  summarise(mean_samp_dist = mean(beta_maxs),
+            var_samp_dist = var(beta_maxs),
+            sd_samp_dist = sd(beta_maxs))
+```
+
+```{r}
+min_plot <- bind_rows(norm_mins_df, unif_mins_df, exp_mins_df, beta_mins_df) |>
+  mutate(dist = case_when(
+    !is.na(norm_mins) ~ "normal(10, 4)",
+    !is.na(unif_mins) ~ "uniform(7, 13)",
+    !is.na(exp_mins) ~ "exponential(0.5)",
+    !is.na(beta_mins) ~ "beta(8, 2)")) |>
+  mutate(dist = fct_relevel(dist, c("normal(10, 4)", "uniform(7, 13)", 
+                                    "exponential(0.5)", "beta(8, 2)")),
+         min = pmin(norm_mins, unif_mins, exp_mins, beta_mins, na.rm = TRUE))
+
+max_plot <- bind_rows(norm_maxs_df, unif_maxs_df, exp_maxs_df, beta_maxs_df) |>
+  mutate(dist = case_when(
+    !is.na(norm_maxs) ~ "normal(10, 4)",
+    !is.na(unif_maxs) ~ "uniform(7, 13)",
+    !is.na(exp_maxs) ~ "exponential(0.5)",
+    !is.na(beta_maxs) ~ "beta(8, 2)")) |>
+  mutate(dist = fct_relevel(dist, c("normal(10, 4)", "uniform(7, 13)", 
+                                    "exponential(0.5)", "beta(8, 2)")),
+         max = pmin(norm_maxs, unif_maxs, exp_maxs, beta_maxs, na.rm = TRUE))
+
+ggplot(data = pop_plot, aes(x = x, y = dens)) +
+  geom_line() +
+  theme_minimal() +
+  facet_wrap(~ pop, nrow = 1, scales = "free") +
+  labs(title = "Population Distributions for Each Simulation Setting")
+
+ggplot(data = min_plot, aes(x = min)) +
+  geom_histogram(color = "black", fill = "darkred") +
+  theme_minimal() +
+  facet_wrap(~ dist, nrow = 1, scales = "free") +
+  labs(title = "Sampling Distribution of the Sample Minimum for Each Simulation Setting")
+
+ggplot(data = max_plot, aes(x = max)) +
+  geom_histogram(color = "black", fill = "darkgreen") +
+  theme_minimal() +
+  facet_wrap(~ dist, nrow = 1, scales = "free") +
+  labs(title = "Sampling Distribution of the Sample Maximum for Each Simulation Setting")
+```
+
+<br>
+
+**Table of Results**
+
+|   | $\text{N}(\mu = 10, \sigma^2 = 4)$ | $\text{Unif}(\theta_1 = 7, \theta_2 = 13)$ | $\text{Exp}(\lambda = 0.5)$ | $\text{Beta}(\alpha = 8, \beta = 2)$ |
+|:-------------:|:-------------:|:-------------:|:-------------:|:-------------:|
+| $\text{E}(Y_{min})$ | 7.69 | 8.01 | 0.398 | 0.646 |
+| $\text{E}(Y_{max})$ | 12.3 | 12.0 | 4.57 | 0.924 |
+|  |  |  |  |  |
+| $\text{SE}(Y_{min})$ | 1.32 | 0.855 | 0.402 | 0.107 |
+| $\text{SE}(Y_{max})$ | 1.32 | 0.848 | 2.41 | 0.0454 |
+
+: Table of Results {.striped .hover}
+
+<br>
+
+**(1)** Based on the table of results above, $SE(Y_{min}) \approx SE(Y_{max})$ for the normal and uniform distributions and *not* for the exponential and beta distributions. This may be because the normal and uniform distributions are symmetric distributions whereas the exponential and beta distributions are not symmetric.
+
+<br>
+
+**(2)** Calculations for $Exp(\lambda = 0.5), n = 5$.
+
+**PDF and CDF for** $Exp(\lambda = 0.5)$:
+
+$f(y) = 0.5e^{-0.5y}, y > 0$
+
+$F(y) = 1-e^{-0.5y}, y > 0 \space \text{since} \space \int_0^y 0.5e^{-0.5y}dy = 1-e^{-0.5y}$
+
+<br>
+
+**PDF for** $Y_{min}$:
+
+$f_{min}(y) = n(1-F(y))^{n-1}f(y)$
+
+$f_{min}(y) = 5(1-(1-e^{-0.5y}))^4(0.5e^{-0.5y})$ simplifies to...
+
+$f_{min}(y) = 2.5e^{-2.5y}, y > 0$
+
+```{r}
+n <- 5
+y <- seq(0, 3, length.out = 1000)
+
+## NOTE: this is not a proper density (it does not integrate to 1).
+density <- 2.5 * exp(-(2.5) * y)
+
+## put into tibble and plot
+samp_min_df <- tibble(y, density)
+ggplot(data = samp_min_df, aes(x = y, y = density)) +
+  geom_line() +
+  theme_minimal() +
+  labs(title = "PDF for Exponential(0.5), Ymin")
+```
+
+<br>
+
+**PDF for** $Y_{max}$:
+
+$f_{max}(y) = n(F(y))^{n-1}f(y)$
+
+$f_{max}(y) = 5(1-e^{-0.5y})^4(0.5e^{-0.5y})$
+
+```{r}
+n <- 5
+y <- seq(0, 15, length.out = 1000)
+
+## NOTE: this is not a proper density (it does not integrate to 1).
+density <- 5 * (1 - exp(-(0.5) * y)) ^ 4 * (0.5*exp(-(0.5)*y))
+
+## put into tibble and plot
+samp_min_df <- tibble(y, density)
+ggplot(data = samp_min_df, aes(x = y, y = density)) +
+  geom_line() +
+  theme_minimal() +
+  labs(title = "PDF for Exponential(0.5), Ymax")
+```
+
+<br>
+
+**Expected Value and Standard Error for** $Y_{min}$:
+
+$E(Y_{min}) = \int_0^{\infty}y(2.5e^{-2.5y})dy = 0.4$
+
+$E(Y_{min}^2) = \int_0^{\infty}y^2(2.5e^{-2.5y})dy = 0.32$
+
+$Var(Y_{min}) = E(Y_{min}^2) - E(Y_{min})^2 = 0.32 - 0.4^2 = 0.16$
+
+$SE(Y_{min}) = \sqrt{Var(Y_{min})} = \sqrt{0.16} = 0.4$
+
+**Expected Value and Standard Error for** $Y_{max}$:
+
+$E(Y_{max}) = \int_0^{\infty}5y(1-e^{-0.5y})^4(0.5e^{-0.5y})dy = 4.57$
+
+$E(Y_{max}^2) = \int_0^{\infty}5y^2(1-e^{-0.5y})^4(0.5e^{-0.5y})dy = 26.7089$
+
+$Var(Y_{max}) = E(Y_{max}^2) - E(Y_{max})^2 = 26.7089 - 4.57^2 = 5.824$
+
+$SE(Y_{max}) = \sqrt{Var(Y_{max})} = \sqrt{5.824} = 2.41$
+
+<br>
+
+**Brief Conclusion**: These theoretical values for expectation and standard error are very similar to the simulated values for the exponential(0.5) distribution. This is reassuring because the theory backs up the results we drew from the simulation.
+
+<br>
+
+
+
+

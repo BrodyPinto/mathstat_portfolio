@@ -1,0 +1,13 @@
+[
+  {
+    "listing": "/index.html",
+    "items": [
+      "/posts/welcome/index.html",
+      "/posts/05-hypothesis_testing/hypothesistesting.html",
+      "/posts/04-bayesian_statistics/bayes.html",
+      "/posts/03-confidence_intervals/i.html",
+      "/posts/02-estimation/index.html",
+      "/posts/01-sampling_distributions/index.html"
+    ]
+  }
+]
